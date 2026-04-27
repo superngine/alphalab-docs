@@ -321,6 +321,13 @@ body {
 .content-body a { color: var(--primary-h); text-decoration: none; }
 .content-body a:hover { text-decoration: underline; }
 
+.content-body mark.manual-highlight {
+  padding: 0 .08em;
+  border-radius: .12em;
+  background: var(--manual-highlight-color, #fef9c3);
+  color: inherit;
+}
+
 .content-body ul,
 .content-body ol {
   margin: .5em 0 1em 1.5em;

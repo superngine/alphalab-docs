@@ -417,6 +417,26 @@
     });
   }
 
+  function sanitizeManualHighlightColor(value) {
+    const raw = String(value ?? '').trim();
+    if (/^#[0-9a-f]{3,8}$/i.test(raw)) {
+      return raw;
+    }
+    if (/^rgba?\(\d{1,3},\d{1,3},\d{1,3}(,(0|1|0?\.\d+))?\)$/i.test(raw)) {
+      return raw;
+    }
+    return '#fef9c3';
+  }
+
+  function replaceGeneratedInlineMarks(html) {
+    return String(html ?? '')
+      .replace(/\{\{manual-highlight:([^}\n]+)\}\}/g, (_match, color) => {
+        const safeColor = sanitizeManualHighlightColor(color);
+        return `<mark class="manual-highlight" data-component="manual-highlight" style="--manual-highlight-color: ${escapeHtml(safeColor)};">`;
+      })
+      .replace(/\{\{\/manual-highlight\}\}/g, '</mark>');
+  }
+
   function escapeRawHtmlSegment(segment) {
     return segment
       .replace(/<!--[\s\S]*?-->/g, (match) => escapeHtml(match))
@@ -457,13 +477,13 @@
   }
 
   function renderMarkdownFragment(markdown, options) {
-    return window.marked.parse(prepareMarkdown(markdown, options));
+    return replaceGeneratedInlineMarks(window.marked.parse(prepareMarkdown(markdown, options)));
   }
 
   function renderMarkdown(markdown, options) {
     const resolvedOptions = options || {};
     const prepared = prepareMarkdown(markdown, resolvedOptions);
-    return window.marked.parse(prepared);
+    return replaceGeneratedInlineMarks(window.marked.parse(prepared));
   }
 
   window.ManualRenderer = {
