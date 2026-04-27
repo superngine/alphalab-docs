@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alphalab Plus</title>
+  <link rel="icon" type="image/svg+xml" href="assets/brand/alphalab.svg" />
+  <link rel="stylesheet" href="assets/css/manual.css" />
+</head>
+<body data-component="manual-viewer" data-state="ready">
+  <header class="manual-header" id="manualHeader" data-component="manual-header">
+    <div class="header-left" data-slot="title-logo">
+      <img class="header-logo" src="assets/brand/alphalab.svg" alt="" aria-hidden="true" />
+      <span class="header-title">Alphalab Plus</span>
+    </div>
+    <div class="header-right" data-slot="viewer-controls">
+      <div class="selector-group" data-component="manual-version-selector" data-state="ready">
+        <label class="selector-label" for="versionSelect">Version</label>
+        <select id="versionSelect" class="header-select" data-slot="version-select" data-id="version-select"></select>
+      </div>
+      <div class="selector-group" data-component="manual-language-selector" data-state="ready">
+        <label class="selector-label" for="langSelect">Language</label>
+        <select id="langSelect" class="header-select" data-slot="language-select" data-id="language-select"></select>
+      </div>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle theme" title="Toggle theme" data-component="manual-theme-toggle" data-id="theme-toggle" data-state="dark">
+        <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      </button>
+    </div>
+  </header>
+  <div class="manual-layout" data-component="manual-layout">
+    <nav class="manual-sidebar" id="manualSidebar" aria-label="Table of Contents" data-component="manual-toc-sidebar">
+      <div class="sidebar-inner" id="tocContainer" data-slot="toc-container">
+        <div class="toc-loading">불러오는 중...</div>
+      </div>
+    </nav>
+    <main class="manual-content" id="manualContent" data-component="manual-content">
+      <article class="content-article" id="contentArticle" data-slot="article">
+        <div class="content-loading" id="contentLoading" data-slot="content-loading" data-state="loading">
+          <div class="spinner"></div>
+          <p>콘텐츠를 불러오는 중...</p>
+        </div>
+        <div class="content-body" id="contentBody" data-slot="content-body" style="display:none"></div>
+      </article>
+      <nav class="page-nav" id="pageNav" aria-label="Page navigation" data-component="manual-page-nav">
+        <button class="page-nav-btn" id="prevBtn" type="button" disabled data-slot="previous" data-id="previous-page" data-state="disabled">
+          <span class="page-nav-arrow" aria-hidden="true">←</span>
+          <span class="page-nav-text"><span class="page-nav-label" id="prevLabel">이전</span><span class="page-nav-title" id="prevTitle"></span></span>
+        </button>
+        <button class="page-nav-btn page-nav-btn--next" id="nextBtn" type="button" disabled data-slot="next" data-id="next-page" data-state="disabled">
+          <span class="page-nav-text page-nav-text--next"><span class="page-nav-label" id="nextLabel">다음</span><span class="page-nav-title" id="nextTitle"></span></span>
+          <span class="page-nav-arrow" aria-hidden="true">→</span>
+        </button>
+      </nav>
+    </main>
+  </div>
+  <script src="assets/js/marked.min.js"></script>
+  <script src="assets/js/manual-renderer.js"></script>
+  <script src="assets/js/manual.js"></script>
+</body>
+</html>
