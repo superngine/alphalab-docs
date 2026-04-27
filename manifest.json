@@ -336,25 +336,25 @@
           "pages": [
             {
               "id": "715cdeb1-2dcc-4ce1-a82b-516fd50ad8ce",
-              "title": "튜토리얼",
+              "title": "Tutorial",
               "file": "04-aebcf31a-c31c-406e-9a6d-6d1e9dda834f/01-715cdeb1-2dcc-4ce1-a82b-516fd50ad8ce.md",
               "documentId": "715cdeb1-2dcc-4ce1-a82b-516fd50ad8ce"
             },
             {
               "id": "fea3fd5a-4e82-4a01-a4c8-a12763fb0d29",
-              "title": "인물 생성",
+              "title": "Character Generation",
               "file": "04-aebcf31a-c31c-406e-9a6d-6d1e9dda834f/02-fea3fd5a-4e82-4a01-a4c8-a12763fb0d29.md",
               "documentId": "fea3fd5a-4e82-4a01-a4c8-a12763fb0d29"
             },
             {
               "id": "39bb9538-5cfd-4c44-b45e-2be100f3b62e",
-              "title": "러프,스케치 기반 인물 생성 사례 몇가지",
+              "title": "A few examples of rough sketch-based character generation",
               "file": "04-aebcf31a-c31c-406e-9a6d-6d1e9dda834f/03-39bb9538-5cfd-4c44-b45e-2be100f3b62e.md",
               "documentId": "39bb9538-5cfd-4c44-b45e-2be100f3b62e"
             },
             {
               "id": "d8cc6a8e-8488-4e91-a32a-dd94975a9b09",
-              "title": "사례별",
+              "title": "By Case",
               "file": "04-aebcf31a-c31c-406e-9a6d-6d1e9dda834f/04-d8cc6a8e-8488-4e91-a32a-dd94975a9b09.md",
               "documentId": "d8cc6a8e-8488-4e91-a32a-dd94975a9b09"
             },
@@ -504,25 +504,25 @@
           "pages": [
             {
               "id": "715cdeb1-2dcc-4ce1-a82b-516fd50ad8ce",
-              "title": "튜토리얼",
+              "title": "チュートリアル",
               "file": "04-aebcf31a-c31c-406e-9a6d-6d1e9dda834f/01-715cdeb1-2dcc-4ce1-a82b-516fd50ad8ce.md",
               "documentId": "715cdeb1-2dcc-4ce1-a82b-516fd50ad8ce"
             },
             {
               "id": "fea3fd5a-4e82-4a01-a4c8-a12763fb0d29",
-              "title": "인물 생성",
+              "title": "人物生成",
               "file": "04-aebcf31a-c31c-406e-9a6d-6d1e9dda834f/02-fea3fd5a-4e82-4a01-a4c8-a12763fb0d29.md",
               "documentId": "fea3fd5a-4e82-4a01-a4c8-a12763fb0d29"
             },
             {
               "id": "39bb9538-5cfd-4c44-b45e-2be100f3b62e",
-              "title": "러프,스케치 기반 인물 생성 사례 몇가지",
+              "title": "ラフ、スケッチベースの人物生成の事例いくつか",
               "file": "04-aebcf31a-c31c-406e-9a6d-6d1e9dda834f/03-39bb9538-5cfd-4c44-b45e-2be100f3b62e.md",
               "documentId": "39bb9538-5cfd-4c44-b45e-2be100f3b62e"
             },
             {
               "id": "d8cc6a8e-8488-4e91-a32a-dd94975a9b09",
-              "title": "사례별",
+              "title": "事例別",
               "file": "04-aebcf31a-c31c-406e-9a6d-6d1e9dda834f/04-d8cc6a8e-8488-4e91-a32a-dd94975a9b09.md",
               "documentId": "d8cc6a8e-8488-4e91-a32a-dd94975a9b09"
             },
@@ -610,9 +610,7 @@
     "5ab80a75-acf5-4420-a65c-2c23f40a20a4": "assets/media/5ab80a75-acf5-4420-a65c-2c23f40a20a4.png",
     "e677adab-882a-45f7-9fa5-edece2c94284": "assets/media/e677adab-882a-45f7-9fa5-edece2c94284.png",
     "431321d1-683f-42f0-96ab-ef91f508a885": "assets/media/431321d1-683f-42f0-96ab-ef91f508a885.png",
-    "96d98e28-4de5-4a6e-8339-3ae1103bfc8d": "assets/media/96d98e28-4de5-4a6e-8339-3ae1103bfc8d.png",
-    "6947594c-b92b-481e-984a-7cc6ac75e9ac": "assets/media/6947594c-b92b-481e-984a-7cc6ac75e9ac.png",
-    "73b3aae9-5b3a-4f09-8825-eff77b9ec743": "assets/media/73b3aae9-5b3a-4f09-8825-eff77b9ec743.png"
+    "96d98e28-4de5-4a6e-8339-3ae1103bfc8d": "assets/media/96d98e28-4de5-4a6e-8339-3ae1103bfc8d.png"
   },
   "assets": {
     "c984ba0f-02ca-4ab6-bc62-d1d038861934": {
@@ -979,16 +977,6 @@
       "path": "assets/media/96d98e28-4de5-4a6e-8339-3ae1103bfc8d.png",
       "exportPath": "assets/media/96d98e28-4de5-4a6e-8339-3ae1103bfc8d.png",
       "storageKey": "1d6d0004-9850-47a3-8889-18e3ffcb59a5.png"
-    },
-    "6947594c-b92b-481e-984a-7cc6ac75e9ac": {
-      "path": "assets/media/6947594c-b92b-481e-984a-7cc6ac75e9ac.png",
-      "exportPath": "assets/media/6947594c-b92b-481e-984a-7cc6ac75e9ac.png",
-      "storageKey": "a04de8ef-7f0f-48f5-b4f4-52e734693c79.png"
-    },
-    "73b3aae9-5b3a-4f09-8825-eff77b9ec743": {
-      "path": "assets/media/73b3aae9-5b3a-4f09-8825-eff77b9ec743.png",
-      "exportPath": "assets/media/73b3aae9-5b3a-4f09-8825-eff77b9ec743.png",
-      "storageKey": "cacc11bc-5d80-4dc0-b229-9f4815ecf39b.png"
     }
   }
 }
