@@ -496,8 +496,15 @@ body {
 }
 
 .manual-hotspot-marker:hover,
+.manual-hotspot-marker:focus,
 .manual-hotspot-marker:focus-visible {
-  z-index: 3;
+  z-index: 30;
+}
+
+.manual-hotspot-stage:has(.manual-hotspot-marker:hover) .manual-hotspot-marker:not(:hover):not(:focus-visible),
+.manual-hotspot-stage:has(.manual-hotspot-marker:focus) .manual-hotspot-marker:not(:hover):not(:focus):not(:focus-visible),
+.manual-hotspot-stage:has(.manual-hotspot-marker:focus-visible) .manual-hotspot-marker:not(:hover):not(:focus-visible) {
+  z-index: 1;
 }
 
 .manual-hotspot-marker > span:not(.manual-hotspot-tooltip) {
@@ -506,7 +513,7 @@ body {
 
 .manual-hotspot-tooltip {
   position: absolute;
-  z-index: 1;
+  z-index: 40;
   top: var(--tooltip-top, auto);
   right: var(--tooltip-right, auto);
   bottom: var(--tooltip-bottom, calc(100% + 16px));
@@ -514,7 +521,8 @@ body {
   transform: translate(var(--tooltip-translate-x, -50%), 0);
   box-sizing: border-box;
   min-width: 180px;
-  max-width: 240px;
+  width: var(--tooltip-width, auto);
+  max-width: var(--tooltip-max-width, 240px);
   white-space: normal;
   overflow-wrap: anywhere;
   padding: 10px 12px;

@@ -185,7 +185,137 @@
       renderTableSpanAttribute('rowspan', cell?.rowspan),
       renderTableAlignAttribute(cell?.align),
     ].filter(Boolean).join('');
-    return `<${tagName}${attrs}>${renderMarkdownFragment(cell?.markdown, options)}</${tagName}>`;
+    const contentHtml = Array.isArray(cell?.content)
+      ? renderTiptapContent(cell.content, options)
+      : renderMarkdownFragment(cell?.markdown, options);
+    return `<${tagName}${attrs}>${contentHtml}</${tagName}>`;
+  }
+
+  function renderTiptapContent(content, options) {
+    return Array.isArray(content)
+      ? content.map((node) => renderTiptapNode(node, options)).join('')
+      : '';
+  }
+
+  function renderTiptapNode(node, options) {
+    if (!node || typeof node !== 'object') return '';
+
+    switch (node.type) {
+      case 'text':
+        return renderTiptapText(node);
+      case 'paragraph':
+        return `<p>${renderTiptapContent(node.content, options)}</p>`;
+      case 'heading': {
+        const level = Math.round(clampNumber(Number(node.attrs?.level ?? 2), 1, 6));
+        return `<h${level}>${renderTiptapContent(node.content, options)}</h${level}>`;
+      }
+      case 'hardBreak':
+        return '<br>';
+      case 'bulletList':
+        return `<ul>${renderTiptapContent(node.content, options)}</ul>`;
+      case 'orderedList': {
+        const start = Number(node.attrs?.start);
+        const startAttr = Number.isInteger(start) && start > 1 ? ` start="${start}"` : '';
+        return `<ol${startAttr}>${renderTiptapContent(node.content, options)}</ol>`;
+      }
+      case 'listItem':
+        return `<li>${renderTiptapContent(node.content, options)}</li>`;
+      case 'blockquote':
+        return `<blockquote>${renderTiptapContent(node.content, options)}</blockquote>`;
+      case 'codeBlock':
+        return `<pre><code>${escapeHtml(renderPlainTiptapText(node))}</code></pre>`;
+      case 'image':
+        return renderTiptapImageNode(node, options);
+      case 'manualAssetNode':
+        return renderTiptapManualAssetNode(node, options);
+      case 'annotationAssetNode':
+        return renderTiptapAnnotationAssetNode(node, options);
+      default:
+        return renderTiptapContent(node.content, options);
+    }
+  }
+
+  function renderTiptapText(node) {
+    const marks = Array.isArray(node.marks) ? node.marks : [];
+    return marks.reduce(
+      (html, mark) => wrapTiptapMark(html, mark),
+      escapeHtml(node.text || '')
+    );
+  }
+
+  function wrapTiptapMark(html, mark) {
+    if (!mark || typeof mark !== 'object') return html;
+    if (mark.type === 'bold') return `<strong>${html}</strong>`;
+    if (mark.type === 'italic') return `<em>${html}</em>`;
+    if (mark.type === 'strike') return `<s>${html}</s>`;
+    if (mark.type === 'code') return `<code>${html}</code>`;
+    if (mark.type === 'underline') return `<u>${html}</u>`;
+    if (mark.type === 'subscript') return `<sub>${html}</sub>`;
+    if (mark.type === 'superscript') return `<sup>${html}</sup>`;
+    if (mark.type === 'highlight') {
+      const color = sanitizeManualHighlightColor(mark.attrs?.color);
+      return `<mark class="manual-highlight" data-component="manual-highlight" style="--manual-highlight-color: ${escapeHtml(color)};">${html}</mark>`;
+    }
+    if (mark.type === 'link') {
+      const href = sanitizeHref(mark.attrs?.href);
+      return href ? `<a href="${escapeHtml(href)}">${html}</a>` : html;
+    }
+    return html;
+  }
+
+  function sanitizeHref(value) {
+    const href = String(value ?? '').trim();
+    return /^(https?:\/\/|mailto:|#|\/)/i.test(href) ? href : '';
+  }
+
+  function renderPlainTiptapText(node) {
+    if (!node || typeof node !== 'object') return '';
+    if (node.type === 'text') return node.text || '';
+    return Array.isArray(node.content)
+      ? node.content.map(renderPlainTiptapText).join('')
+      : '';
+  }
+
+  function renderTiptapImageNode(node, options) {
+    const src = resolveAssetUrl(node.attrs?.src, options);
+    return src
+      ? `<img src="${escapeHtml(src)}" alt="${escapeHtml(node.attrs?.alt || 'Image')}" loading="lazy" />`
+      : '';
+  }
+
+  function renderTiptapManualAssetNode(node, options) {
+    const attrs = node.attrs || {};
+    const kind = attrs.kind || 'image';
+    const source = attrs.assetId ? `manual-asset://${attrs.assetId}` : attrs.src;
+    const url = resolveAssetUrl(source, options);
+    const title = attrs.title || attrs.fileName || 'Manual asset';
+    if (!url) return '';
+    if (kind === 'image') {
+      return `<img src="${escapeHtml(url)}" alt="${escapeHtml(title)}" loading="lazy" />`;
+    }
+    if (kind === 'video') {
+      return `<video controls preload="metadata" src="${escapeHtml(url)}"></video>`;
+    }
+    return `<a href="${escapeHtml(url)}">${escapeHtml(title)}</a>`;
+  }
+
+  function renderTiptapAnnotationAssetNode(node, options) {
+    const attrs = node.attrs || {};
+    return renderHotspotBlock(
+      {
+        asset: `manual-asset://${attrs.imageAssetId || ''}`,
+        alt: attrs.imageTitle || attrs.title || 'Annotation image',
+        layout: attrs.layout,
+        renderMode: attrs.layout === 'vertical' ? 'image-plus-description' : 'overlay-on-image',
+        points: Array.isArray(attrs.points) ? attrs.points.map((point) => ({
+          ...point,
+          body: point.body || point.description || '',
+        })) : [],
+        shapes: Array.isArray(attrs.shapes) ? attrs.shapes : [],
+      },
+      options,
+      'manual-annotation-ui'
+    );
   }
 
   function renderTableSpanAttribute(name, value) {
@@ -401,7 +531,7 @@
   }
 
   function replaceRichBlocks(markdown, options) {
-    return markdown.replace(/```(manual-video|manual-hotspot|manual-annotation-ui|manual-table)\n([\s\S]*?)```/g, (_match, blockType, blockBody) => {
+    return replaceFencedBlocks(markdown, isRichBlockType, (blockType, blockBody) => {
       try {
         const config = JSON.parse(blockBody.trim());
         if (blockType === 'manual-video') {
@@ -417,8 +547,80 @@
     });
   }
 
+  function isRichBlockType(blockType) {
+    return [
+      'manual-video',
+      'manual-hotspot',
+      'manual-annotation-ui',
+      'manual-table',
+    ].includes(blockType);
+  }
+
+  function replaceFencedBlocks(markdown, shouldReplace, replacer) {
+    const blocks = findFencedBlocks(markdown, shouldReplace);
+    if (!blocks.length) return markdown;
+
+    let output = '';
+    let cursor = 0;
+    for (const block of blocks) {
+      output += markdown.slice(cursor, block.start);
+      output += renderMarkdownBlockBoundary(replacer(block.type, block.body, block.raw));
+      cursor = block.end;
+    }
+    output += markdown.slice(cursor);
+    return output;
+  }
+
+  function renderMarkdownBlockBoundary(html) {
+    const blockHtml = String(html ?? '').trim();
+    return blockHtml ? `\n\n${blockHtml}\n\n` : '';
+  }
+
+  function findFencedBlocks(markdown, predicate) {
+    const blocks = [];
+    const openerPattern = /^```([A-Za-z0-9-]*)[^\n]*\n/gm;
+    let opener;
+
+    while ((opener = openerPattern.exec(markdown)) !== null) {
+      const blockType = opener[1] || '';
+      const bodyStart = opener.index + opener[0].length;
+      const closePattern = /^```\s*$/gm;
+      closePattern.lastIndex = bodyStart;
+      const closer = closePattern.exec(markdown);
+      if (!closer) break;
+
+      const end = closer.index + closer[0].length;
+      if (!predicate || predicate(blockType)) {
+        blocks.push({
+          type: blockType,
+          start: opener.index,
+          body: markdown.slice(bodyStart, closer.index),
+          raw: markdown.slice(opener.index, end),
+          end,
+        });
+      }
+      openerPattern.lastIndex = end;
+    }
+
+    return blocks;
+  }
+
   function sanitizeManualHighlightColor(value) {
     const raw = String(value ?? '').trim();
+    const highlightColors = {
+      'var(--tt-color-highlight-yellow)': '#fef9c3',
+      'var(--tt-color-highlight-green)': '#dcfce7',
+      'var(--tt-color-highlight-blue)': '#e0f2fe',
+      'var(--tt-color-highlight-purple)': '#f3e8ff',
+      'var(--tt-color-highlight-red)': '#ffe4e6',
+      'var(--tt-color-highlight-gray)': '#f8f8f7',
+      'var(--tt-color-highlight-brown)': '#f4eeee',
+      'var(--tt-color-highlight-orange)': '#fbecdd',
+      'var(--tt-color-highlight-pink)': '#fcf1f6',
+    };
+    if (highlightColors[raw]) {
+      return highlightColors[raw];
+    }
     if (/^#[0-9a-f]{3,8}$/i.test(raw)) {
       return raw;
     }
@@ -453,14 +655,16 @@
   }
 
   function escapeRawHtmlOutsideFences(markdown) {
-    const fencePattern = /```[\s\S]*?```/g;
+    const fencedBlocks = findFencedBlocks(markdown);
+    if (!fencedBlocks.length) {
+      return escapeRawHtmlSegment(markdown);
+    }
     let cursor = 0;
     let output = '';
-    let match;
-    while ((match = fencePattern.exec(markdown)) !== null) {
-      output += escapeRawHtmlSegment(markdown.slice(cursor, match.index));
-      output += match[0];
-      cursor = match.index + match[0].length;
+    for (const block of fencedBlocks) {
+      output += escapeRawHtmlSegment(markdown.slice(cursor, block.start));
+      output += block.raw;
+      cursor = block.end;
     }
     output += escapeRawHtmlSegment(markdown.slice(cursor));
     return output;

@@ -27,6 +27,8 @@
   const SAFE_CANVAS_TOOLTIP_GAP = 16;
   const SAFE_CANVAS_EDGE_GAP = 4;
   const SAFE_CANVAS_MAX_PADDING = 180;
+  const SAFE_CANVAS_TOOLTIP_MIN_WIDTH = 180;
+  const SAFE_CANVAS_TOOLTIP_MAX_WIDTH = 560;
   let imageLightbox = null;
 
   const NAV_LABELS = {
@@ -495,7 +497,11 @@
     stage.classList.add("is-tooltip-safe-canvas");
     stage.dataset.state = "tooltip-safe-canvas";
 
-    const padding = measurePreviewAnnotationSafeCanvasPadding(stage, imageHeight);
+    const padding = measurePreviewAnnotationSafeCanvasPadding(
+      stage,
+      imageWidth,
+      imageHeight
+    );
     stage.style.setProperty("--safe-canvas-padding-top", `${padding.top}px`);
     stage.style.setProperty("--safe-canvas-padding-bottom", `${padding.bottom}px`);
 
@@ -530,7 +536,7 @@
     });
   }
 
-  function measurePreviewAnnotationSafeCanvasPadding(stage, imageHeight) {
+  function measurePreviewAnnotationSafeCanvasPadding(stage, imageWidth, imageHeight) {
     let top = 0;
     let bottom = 0;
 
@@ -538,12 +544,21 @@
       const tooltip = marker.querySelector(".manual-hotspot-tooltip");
       if (!(tooltip instanceof HTMLElement)) return;
 
+      const x = readMarkerPercent(marker, "x");
       const y = readMarkerPercent(marker, "y");
+      const markerX = clamp(
+        (imageWidth * x) / 100,
+        SAFE_CANVAS_MARKER_RADIUS,
+        Math.max(SAFE_CANVAS_MARKER_RADIUS, imageWidth - SAFE_CANVAS_MARKER_RADIUS)
+      );
       const markerY = clamp(
         (imageHeight * y) / 100,
         SAFE_CANVAS_MARKER_RADIUS,
         Math.max(SAFE_CANVAS_MARKER_RADIUS, imageHeight - SAFE_CANVAS_MARKER_RADIUS)
       );
+      const tooltipMaxWidth = getPreviewTooltipSafeWidth(x, imageWidth, markerX);
+      tooltip.style.setProperty("--tooltip-width", "max-content");
+      tooltip.style.setProperty("--tooltip-max-width", `${tooltipMaxWidth}px`);
       const tooltipHeight = measurePreviewTooltipHeight(tooltip);
       const tooltipExtent =
         SAFE_CANVAS_MARKER_RADIUS +
@@ -562,6 +577,28 @@
       top: Math.round(clamp(top, 0, SAFE_CANVAS_MAX_PADDING)),
       bottom: Math.round(clamp(bottom, 0, SAFE_CANVAS_MAX_PADDING)),
     };
+  }
+
+  function getPreviewTooltipSafeWidth(markerXPercent, imageWidth, markerX) {
+    const horizontalPadding = SAFE_CANVAS_EDGE_GAP + SAFE_CANVAS_MARKER_RADIUS;
+    let availableWidth;
+
+    if (markerXPercent <= 28) {
+      availableWidth = imageWidth - markerX - horizontalPadding;
+    } else if (markerXPercent >= 72) {
+      availableWidth = markerX - horizontalPadding;
+    } else {
+      availableWidth =
+        Math.min(markerX, imageWidth - markerX) * 2 - horizontalPadding * 2;
+    }
+
+    return Math.round(
+      clamp(
+        availableWidth,
+        SAFE_CANVAS_TOOLTIP_MIN_WIDTH,
+        SAFE_CANVAS_TOOLTIP_MAX_WIDTH
+      )
+    );
   }
 
   function measurePreviewTooltipHeight(tooltip) {
@@ -598,6 +635,10 @@
     stage.style.removeProperty("--safe-canvas-padding-y");
     stage.style.removeProperty("--safe-canvas-padding-top");
     stage.style.removeProperty("--safe-canvas-padding-bottom");
+    stage.querySelectorAll(".manual-hotspot-tooltip").forEach((tooltip) => {
+      tooltip.style.removeProperty("--tooltip-width");
+      tooltip.style.removeProperty("--tooltip-max-width");
+    });
     stage.querySelectorAll(".manual-hotspot-marker").forEach((marker) => {
       const x = readMarkerPercent(marker, "x");
       const y = readMarkerPercent(marker, "y");
