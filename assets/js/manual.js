@@ -21,14 +21,9 @@
   const IMAGE_LIGHTBOX_SCALE_MIN = 0.4;
   const IMAGE_LIGHTBOX_SCALE_MAX = 5;
   const IMAGE_LIGHTBOX_SCALE_STEP = 0.2;
-  const SAFE_CANVAS_MAX_IMAGE_HEIGHT = 180;
-  const SAFE_CANVAS_MIN_ASPECT_RATIO = 3.2;
-  const SAFE_CANVAS_MARKER_RADIUS = 18;
-  const SAFE_CANVAS_TOOLTIP_GAP = 16;
-  const SAFE_CANVAS_EDGE_GAP = 4;
-  const SAFE_CANVAS_MAX_PADDING = 180;
-  const SAFE_CANVAS_TOOLTIP_MIN_WIDTH = 180;
-  const SAFE_CANVAS_TOOLTIP_MAX_WIDTH = 560;
+  const ANNOTATION_READABLE_IMAGE_WIDTH = 320;
+  const ANNOTATION_MAX_UPSCALE = 2;
+  const ANNOTATION_MAX_DISPLAY_WIDTH = 480;
   let imageLightbox = null;
 
   const NAV_LABELS = {
@@ -69,7 +64,6 @@
     parseHash();
     window.addEventListener("hashchange", onHashChange);
     window.addEventListener("popstate", onHashChange);
-    window.addEventListener("resize", refreshPreviewAnnotationSafeCanvasStages);
     contentBody.addEventListener("click", onContentImageLightboxClick);
     contentBody.addEventListener("keydown", onContentImageLightboxKeyDown);
     navigate(state.lang, state.version, state.pageId, false);
@@ -91,7 +85,9 @@
       navigate(state.lang, versionSelect.value, state.pageId);
     });
     langSelect.addEventListener("change", () => {
-      navigate(langSelect.value, state.version, state.pageId);
+      const selectedLanguage = langSelect.value;
+      window.ManualViewerLanguage?.setStoredViewerLanguagePreference?.(selectedLanguage);
+      navigate(selectedLanguage, state.version, state.pageId);
     });
   }
 
@@ -123,26 +119,36 @@
   }
 
   function parseHash() {
-    const parts = location.hash.replace(/^#\/?/, "").split("/").filter(Boolean);
+    const parts = window.ManualViewerLanguage
+      ? window.ManualViewerLanguage.getHashParts(location.hash)
+      : location.hash.replace(/^#\/?/, "").split("/").filter(Boolean);
     state.version = manifest.defaultVersion;
-    state.lang = manifest.defaultLanguage;
-    state.pageId = getFirstPageId();
 
     if (parts.length >= 3) {
-      state.lang = parts[0];
       state.version = parts[1];
-      state.pageId = parts[2];
     } else if (parts.length === 2) {
-      state.lang = parts[0];
       state.version = parts[1];
-    } else if (parts.length === 1) {
-      state.pageId = parts[0];
     }
 
     if (!manifest.versions.includes(state.version)) {
       state.version = manifest.defaultVersion;
     }
-    state.lang = getResolvedLanguage(state.version, state.lang);
+
+    const preferredLanguage = window.ManualViewerLanguage
+      ? window.ManualViewerLanguage.resolveInitialViewerLanguage({
+          hash: location.hash,
+          defaultLanguage: manifest.defaultLanguage,
+          availableLanguages: getPublishedLanguages(state.version),
+          navigator: window.navigator,
+        })
+      : manifest.defaultLanguage;
+    state.lang = getResolvedLanguage(state.version, preferredLanguage);
+    state.pageId =
+      parts.length >= 3
+        ? parts[2]
+        : parts.length === 1
+          ? parts[0]
+          : getFirstPageId();
   }
 
   function onHashChange() {
@@ -450,180 +456,60 @@
         image.setAttribute("aria-label", "Open image preview");
       });
 
-    initPreviewAnnotationSafeCanvasStages();
+    initPreviewAnnotationStageSizing();
   }
 
-  function initPreviewAnnotationSafeCanvasStages() {
+  function initPreviewAnnotationStageSizing() {
     contentBody
       .querySelectorAll(".manual-annotation-ui .manual-hotspot-stage")
       .forEach((stage) => {
         const image = stage.querySelector("img");
         if (!(image instanceof HTMLImageElement)) return;
-        if (!stage.__annotationSafeCanvasBound) {
-          image.addEventListener("load", () => refreshPreviewAnnotationSafeCanvasStage(stage));
-          stage.__annotationSafeCanvasBound = true;
+        if (!stage.__annotationSizingBound) {
+          image.addEventListener("load", () => refreshPreviewAnnotationStageSizing(stage));
+          stage.__annotationSizingBound = true;
         }
         if (image.complete) {
-          refreshPreviewAnnotationSafeCanvasStage(stage);
+          refreshPreviewAnnotationStageSizing(stage);
         }
       });
   }
 
-  function refreshPreviewAnnotationSafeCanvasStages() {
-    contentBody
-      .querySelectorAll(".manual-annotation-ui .manual-hotspot-stage")
-      .forEach((stage) => refreshPreviewAnnotationSafeCanvasStage(stage));
-  }
-
-  function refreshPreviewAnnotationSafeCanvasStage(stage) {
+  // Keep preview/export stage sizing readable without changing annotation coordinates.
+  // Markers and shapes are reset from data attributes against the image frame below.
+  function refreshPreviewAnnotationStageSizing(stage) {
     const image = stage.querySelector("img");
     if (!(image instanceof HTMLImageElement) || !image.complete) return;
-
-    const imageRect = image.getBoundingClientRect();
-    const imageWidth = imageRect.width;
-    const imageHeight = imageRect.height;
-    const aspectRatio = imageHeight > 0 ? imageWidth / imageHeight : 0;
-    const imageAspectRatio = getPreviewImageAspectRatio(image);
-    const shouldUseSafeCanvas =
-      imageHeight > 0 &&
-      imageHeight <= SAFE_CANVAS_MAX_IMAGE_HEIGHT &&
-      aspectRatio >= SAFE_CANVAS_MIN_ASPECT_RATIO;
-
-    if (!shouldUseSafeCanvas) {
-      resetPreviewAnnotationSafeCanvasStage(stage);
+    const annotationBlock = stage.closest(".manual-annotation-ui");
+    const naturalWidth = image.naturalWidth;
+    if (!Number.isFinite(naturalWidth) || naturalWidth <= 0) {
+      stage.style.removeProperty("--manual-annotation-stage-width");
+      if (annotationBlock instanceof HTMLElement) {
+        annotationBlock.style.removeProperty("--manual-annotation-stage-width");
+      }
+      delete stage.dataset.annotationScale;
       return;
     }
 
-    stage.classList.add("is-tooltip-safe-canvas");
-    stage.dataset.state = "tooltip-safe-canvas";
-
-    const padding = measurePreviewAnnotationSafeCanvasPadding(
-      stage,
-      imageWidth,
-      imageHeight
-    );
-    stage.style.setProperty("--safe-canvas-padding-top", `${padding.top}px`);
-    stage.style.setProperty("--safe-canvas-padding-bottom", `${padding.bottom}px`);
-
-    stage.querySelectorAll(".manual-hotspot-marker").forEach((marker) => {
-      const x = readMarkerPercent(marker, "x");
-      const y = readMarkerPercent(marker, "y");
-      const markerY = clamp(
-        (imageHeight * y) / 100,
-        SAFE_CANVAS_MARKER_RADIUS,
-        Math.max(SAFE_CANVAS_MARKER_RADIUS, imageHeight - SAFE_CANVAS_MARKER_RADIUS)
-      );
-      marker.style.left = `clamp(18px, ${x}%, calc(100% - 18px))`;
-      marker.style.top = `${padding.top + markerY}px`;
-    });
-
-    stage.querySelectorAll(".manual-hotspot-shape").forEach((shape) => {
-      const x = readShapePercent(shape, "x");
-      const y = readShapePercent(shape, "y");
-      const offsetX = readShapePercent(shape, "offsetX");
-      const offsetY = readShapePercent(shape, "offsetY");
-      const dimensions = readRenderedShapePercent(shape, imageAspectRatio);
-      const shapeCenterY = clamp(
-        (imageHeight * (y + offsetY)) / 100,
-        0,
-        imageHeight
-      );
-
-      shape.style.left = `${x + offsetX}%`;
-      shape.style.top = `${padding.top + shapeCenterY}px`;
-      shape.style.width = `${dimensions.width}%`;
-      shape.style.height = `${(imageHeight * dimensions.height) / 100}px`;
-    });
-  }
-
-  function measurePreviewAnnotationSafeCanvasPadding(stage, imageWidth, imageHeight) {
-    let top = 0;
-    let bottom = 0;
-
-    stage.querySelectorAll(".manual-hotspot-marker").forEach((marker) => {
-      const tooltip = marker.querySelector(".manual-hotspot-tooltip");
-      if (!(tooltip instanceof HTMLElement)) return;
-
-      const x = readMarkerPercent(marker, "x");
-      const y = readMarkerPercent(marker, "y");
-      const markerX = clamp(
-        (imageWidth * x) / 100,
-        SAFE_CANVAS_MARKER_RADIUS,
-        Math.max(SAFE_CANVAS_MARKER_RADIUS, imageWidth - SAFE_CANVAS_MARKER_RADIUS)
-      );
-      const markerY = clamp(
-        (imageHeight * y) / 100,
-        SAFE_CANVAS_MARKER_RADIUS,
-        Math.max(SAFE_CANVAS_MARKER_RADIUS, imageHeight - SAFE_CANVAS_MARKER_RADIUS)
-      );
-      const tooltipMaxWidth = getPreviewTooltipSafeWidth(x, imageWidth, markerX);
-      tooltip.style.setProperty("--tooltip-width", "max-content");
-      tooltip.style.setProperty("--tooltip-max-width", `${tooltipMaxWidth}px`);
-      const tooltipHeight = measurePreviewTooltipHeight(tooltip);
-      const tooltipExtent =
-        SAFE_CANVAS_MARKER_RADIUS +
-        SAFE_CANVAS_TOOLTIP_GAP +
-        tooltipHeight +
-        SAFE_CANVAS_EDGE_GAP;
-
-      if (y <= 50) {
-        bottom = Math.max(bottom, markerY + tooltipExtent - imageHeight);
-      } else {
-        top = Math.max(top, tooltipExtent - markerY);
-      }
-    });
-
-    return {
-      top: Math.round(clamp(top, 0, SAFE_CANVAS_MAX_PADDING)),
-      bottom: Math.round(clamp(bottom, 0, SAFE_CANVAS_MAX_PADDING)),
-    };
-  }
-
-  function getPreviewTooltipSafeWidth(markerXPercent, imageWidth, markerX) {
-    const horizontalPadding = SAFE_CANVAS_EDGE_GAP + SAFE_CANVAS_MARKER_RADIUS;
-    let availableWidth;
-
-    if (markerXPercent <= 28) {
-      availableWidth = imageWidth - markerX - horizontalPadding;
-    } else if (markerXPercent >= 72) {
-      availableWidth = markerX - horizontalPadding;
-    } else {
-      availableWidth =
-        Math.min(markerX, imageWidth - markerX) * 2 - horizontalPadding * 2;
+    const displayWidth =
+      naturalWidth >= ANNOTATION_READABLE_IMAGE_WIDTH
+        ? naturalWidth
+        : Math.min(
+            ANNOTATION_READABLE_IMAGE_WIDTH,
+            naturalWidth * ANNOTATION_MAX_UPSCALE,
+            ANNOTATION_MAX_DISPLAY_WIDTH
+          );
+    const stageWidth = `${Math.round(displayWidth)}px`;
+    stage.style.setProperty("--manual-annotation-stage-width", stageWidth);
+    if (annotationBlock instanceof HTMLElement) {
+      annotationBlock.style.setProperty("--manual-annotation-stage-width", stageWidth);
     }
-
-    return Math.round(
-      clamp(
-        availableWidth,
-        SAFE_CANVAS_TOOLTIP_MIN_WIDTH,
-        SAFE_CANVAS_TOOLTIP_MAX_WIDTH
-      )
+    stage.dataset.annotationScale = String(
+      Math.round((displayWidth / naturalWidth) * 100) / 100
     );
   }
 
-  function measurePreviewTooltipHeight(tooltip) {
-    const previousVisibility = tooltip.style.visibility;
-    const previousOpacity = tooltip.style.opacity;
-    const previousTransition = tooltip.style.transition;
-    const previousPointerEvents = tooltip.style.pointerEvents;
-
-    tooltip.style.visibility = "hidden";
-    tooltip.style.opacity = "1";
-    tooltip.style.transition = "none";
-    tooltip.style.pointerEvents = "none";
-
-    const rect = tooltip.getBoundingClientRect();
-    const height = rect.height || tooltip.scrollHeight || 0;
-
-    tooltip.style.visibility = previousVisibility;
-    tooltip.style.opacity = previousOpacity;
-    tooltip.style.transition = previousTransition;
-    tooltip.style.pointerEvents = previousPointerEvents;
-
-    return height;
-  }
-
-  function resetPreviewAnnotationSafeCanvasStage(stage) {
+  function resetPreviewAnnotationStageGeometry(stage) {
     const image = stage.querySelector("img");
     const imageAspectRatio =
       image instanceof HTMLImageElement ? getPreviewImageAspectRatio(image) : 1;
@@ -753,7 +639,7 @@
     if (trigger.classList.contains("manual-hotspot-stage")) {
       const stage = trigger.cloneNode(true);
       stage.classList.remove("is-preview-lightbox-trigger");
-      resetPreviewAnnotationSafeCanvasStage(stage);
+      resetPreviewAnnotationStageGeometry(stage);
       stage.removeAttribute("role");
       stage.removeAttribute("tabindex");
       stage.removeAttribute("aria-label");
@@ -833,9 +719,13 @@
     imageLightbox.surface.style.transform =
       `translate(${imageLightbox.panX}px, ${imageLightbox.panY}px) scale(${imageLightbox.scale})`;
     imageLightbox.surface.dataset.scale = String(Math.round(imageLightbox.scale * 100));
+    const inverseScale = String(Math.round((1 / imageLightbox.scale) * 1000) / 1000);
     imageLightbox.surface
       .querySelectorAll(".manual-hotspot-stage")
-      .forEach((stage) => stage.style.setProperty("--preview-lightbox-scale", String(imageLightbox.scale)));
+      .forEach((stage) => {
+        stage.style.setProperty("--preview-lightbox-scale", String(imageLightbox.scale));
+        stage.style.setProperty("--preview-lightbox-inverse-scale", inverseScale);
+      });
   }
 
   function onPreviewImageLightboxWheel(event) {

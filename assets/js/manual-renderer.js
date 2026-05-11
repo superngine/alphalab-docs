@@ -165,13 +165,67 @@
       : '';
     const bodyRows = firstRowIsHeader ? normalizedRows.slice(1) : normalizedRows;
     const bodyHtml = bodyRows.map((row) => renderManualTableRow(row, options, false)).join('');
+    const colgroupHtml = renderManualTableColgroup(normalizedRows);
 
     return [
       '<table data-component="manual-table-block">',
+      colgroupHtml,
       headHtml,
       `<tbody>${bodyHtml}</tbody>`,
       '</table>',
     ].join('');
+  }
+
+  function renderManualTableColgroup(rows) {
+    const widths = deriveManualTableColumnWidths(rows);
+    if (!widths.some((width) => width > 0)) return '';
+
+    return [
+      '<colgroup>',
+      widths.map((width) => {
+        return width > 0
+          ? `<col style="width:${width}px">`
+          : '<col>';
+      }).join(''),
+      '</colgroup>',
+    ].join('');
+  }
+
+  function deriveManualTableColumnWidths(rows) {
+    const widths = [];
+    let activeRowspans = [];
+
+    rows.forEach((row) => {
+      let columnIndex = 0;
+      row.cells.forEach((cell) => {
+        while (activeRowspans[columnIndex] > 0) {
+          columnIndex += 1;
+        }
+
+        const colspan = normalizeTableSpan(cell?.colspan);
+        const rowspan = normalizeTableSpan(cell?.rowspan);
+        const colwidth = normalizeTableColwidth(cell?.colwidth);
+
+        for (let offset = 0; offset < colspan; offset += 1) {
+          const width = colwidth[offset];
+          if (width > 0 && !(widths[columnIndex + offset] > 0)) {
+            widths[columnIndex + offset] = width;
+          }
+          if (rowspan > 1) {
+            activeRowspans[columnIndex + offset] = Math.max(
+              activeRowspans[columnIndex + offset] || 0,
+              rowspan
+            );
+          }
+        }
+
+        columnIndex += colspan;
+      });
+
+      activeRowspans = activeRowspans.map((rowspan) => Math.max(0, (rowspan || 0) - 1));
+    });
+
+    return widths;
   }
 
   function renderManualTableRow(row, options, forceHeader) {
@@ -319,8 +373,21 @@
   }
 
   function renderTableSpanAttribute(name, value) {
+    const span = normalizeTableSpan(value);
+    return span > 1 ? ` ${name}="${span}"` : '';
+  }
+
+  function normalizeTableSpan(value) {
     const span = Number(value);
-    return Number.isInteger(span) && span > 1 ? ` ${name}="${Math.min(span, 100)}"` : '';
+    return Number.isInteger(span) && span > 1 ? Math.min(span, 100) : 1;
+  }
+
+  function normalizeTableColwidth(value) {
+    if (!Array.isArray(value)) return [];
+    return value
+      .map((width) => Number(width))
+      .filter((width) => Number.isFinite(width) && width > 0)
+      .map((width) => Math.min(Math.round(width), 10000));
   }
 
   function renderTableAlignAttribute(value) {
@@ -351,6 +418,8 @@
       : 'horizontal';
     const renderMode = layout === 'vertical' ? 'image-plus-description' : 'overlay-on-image';
     const isLegacyHotspot = blockType === 'manual-hotspot';
+    // Data attributes are the renderer contract consumed by preview runtime geometry resets.
+    // Initial inline percentages remain valid for no-JS export and print paths.
     const shapesHtml = shapes.map((shape, index) => {
       const shapePoint = pointById.get(String(shape.pointId || ''));
       if (!shapePoint) {
@@ -449,8 +518,10 @@
       `<figure class="manual-hotspot manual-annotation-ui is-layout-${layout} ${renderMode === 'image-plus-description' ? 'is-image-plus-description' : 'is-overlay-on-image'}" id="${figureId}" data-component="manual-hotspot-block" data-slot="annotation-ui-block" data-state="${renderMode}" data-layout="${layout}" data-kind="annotation-ui">`,
       '<div class="manual-annotation-ui-layout" data-slot="annotation-layout">',
       '<div class="manual-hotspot-stage" data-slot="hotspot-stage">',
+      '<div class="manual-hotspot-image-frame" data-component="manual-hotspot-image-frame" data-slot="hotspot-image-frame">',
       `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(config.alt || 'AnnotationUI image')}" loading="lazy" />`,
       shapesHtml,
+      '</div>',
       markersHtml,
       '</div>',
       listHtml,
