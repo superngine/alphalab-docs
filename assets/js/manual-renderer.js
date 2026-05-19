@@ -32,6 +32,188 @@
     return rawUrl;
   }
 
+  function normalizeAnnotationLanguageCode(languageCode, fallback) {
+    const primary = String(languageCode ?? '')
+      .trim()
+      .toLowerCase()
+      .replace(/_/g, '-')
+      .split('-')[0];
+    if (primary === 'jp') return 'ja';
+    if (/^[a-z][a-z0-9-]{0,15}$/.test(primary)) return primary;
+    return fallback ? normalizeAnnotationLanguageCode(fallback, '') : '';
+  }
+
+  function resolveAnnotationConfigForLanguage(config, options = {}) {
+    const sourceLanguageCode =
+      normalizeAnnotationLanguageCode(config.sourceLanguageCode) || 'ko';
+    const languageCode =
+      normalizeAnnotationLanguageCode(options.languageCode, sourceLanguageCode) ||
+      sourceLanguageCode;
+    const image = resolveAnnotationImageForLanguage(config, {
+      languageCode,
+      sourceLanguageCode,
+    });
+    const points = Array.isArray(config.points)
+      ? config.points.map((point, index) =>
+          resolveAnnotationPointForLanguage(point, {
+            languageCode,
+            sourceLanguageCode,
+            index,
+          })
+        )
+      : [];
+
+    return {
+      ...config,
+      asset: image.asset,
+      alt: image.imageTitle,
+      imageAssetId: image.imageAssetId,
+      imageSrc: image.imageSrc,
+      imageTitle: image.imageTitle,
+      points,
+    };
+  }
+
+  function resolveAnnotationImageForLanguage(config, languageContext) {
+    const baseImage = readBaseAnnotationImage(config);
+    const imageByLanguage = readAnnotationImageByLanguage(config);
+    const selectedImage =
+      languageContext.languageCode === languageContext.sourceLanguageCode
+        ? null
+        : imageByLanguage[languageContext.languageCode] || null;
+    const sourceImage = imageByLanguage[languageContext.sourceLanguageCode] || null;
+    return selectedImage || sourceImage || baseImage;
+  }
+
+  function resolveAnnotationPointForLanguage(point, languageContext) {
+    const sourcePoint = point && typeof point === 'object' ? point : {};
+    const label = resolveAnnotationTextField(sourcePoint, 'label', languageContext);
+    const title = resolveAnnotationTextField(sourcePoint, 'title', languageContext);
+    const description = resolveAnnotationTextField(
+      sourcePoint,
+      'description',
+      languageContext
+    );
+
+    return {
+      ...sourcePoint,
+      id: sourcePoint.id || `point-${(Number(languageContext.index) || 0) + 1}`,
+      label,
+      title,
+      description,
+      body: description,
+    };
+  }
+
+  function resolveAnnotationTextField(point, field, languageContext) {
+    const selected = readLocalizedAnnotationText(
+      point,
+      field,
+      languageContext.languageCode
+    );
+    if (selected.hasValue) return selected.value;
+
+    const source = readLocalizedAnnotationText(
+      point,
+      field,
+      languageContext.sourceLanguageCode
+    );
+    if (source.hasValue) return source.value;
+
+    const aliases = field === 'description' ? ['description', 'body'] : [field];
+    for (const alias of aliases) {
+      if (Object.prototype.hasOwnProperty.call(point, alias) && typeof point[alias] === 'string') {
+        return point[alias];
+      }
+    }
+    return '';
+  }
+
+  function readLocalizedAnnotationText(point, field, languageCode) {
+    const textByLanguage = normalizeAnnotationTextByLanguage(
+      point.textByLanguage || point.translations || point.i18n
+    );
+    const text = textByLanguage[languageCode];
+    const aliases = field === 'description' ? ['description', 'body'] : [field];
+    for (const alias of aliases) {
+      if (text && Object.prototype.hasOwnProperty.call(text, alias) && typeof text[alias] === 'string') {
+        return { hasValue: true, value: text[alias] };
+      }
+    }
+
+    const mapKeys = aliases.flatMap((alias) => [`${alias}ByLanguage`, `${alias}ByLang`, alias]);
+    for (const key of mapKeys) {
+      const map = point[key];
+      if (!map || typeof map !== 'object' || Array.isArray(map)) continue;
+      for (const [rawLanguageCode, value] of Object.entries(map)) {
+        if (
+          normalizeAnnotationLanguageCode(rawLanguageCode) === languageCode &&
+          typeof value === 'string'
+        ) {
+          return { hasValue: true, value };
+        }
+      }
+    }
+
+    return { hasValue: false, value: '' };
+  }
+
+  function normalizeAnnotationTextByLanguage(value) {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return {};
+    const result = {};
+    for (const [rawLanguageCode, rawText] of Object.entries(value)) {
+      const languageCode = normalizeAnnotationLanguageCode(rawLanguageCode);
+      if (!languageCode || !rawText || typeof rawText !== 'object' || Array.isArray(rawText)) continue;
+      result[languageCode] = rawText;
+    }
+    return result;
+  }
+
+  function readAnnotationImageByLanguage(config) {
+    const raw =
+      config.imageByLanguage || config.imagesByLanguage || config.imageOverrides;
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {};
+    const result = {};
+    for (const [rawLanguageCode, rawImage] of Object.entries(raw)) {
+      const languageCode = normalizeAnnotationLanguageCode(rawLanguageCode);
+      const image = normalizeAnnotationImageOverride(rawImage);
+      if (languageCode && image) result[languageCode] = image;
+    }
+    return result;
+  }
+
+  function readBaseAnnotationImage(config) {
+    const asset = config.asset || config.imageSrc || '';
+    const imageAssetId = config.imageAssetId || extractManualAssetId(asset);
+    const imageSrc = config.imageSrc || asset;
+    const imageTitle = config.imageTitle || config.alt || config.title || 'Annotation image';
+    return {
+      imageAssetId,
+      imageSrc,
+      imageTitle,
+      asset: imageAssetId ? `manual-asset://${imageAssetId}` : imageSrc,
+    };
+  }
+
+  function normalizeAnnotationImageOverride(value) {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+    const rawAsset = value.asset || value.imageSrc || value.src || value.url || '';
+    const imageAssetId = value.imageAssetId || value.assetId || extractManualAssetId(rawAsset);
+    const imageSrc = value.imageSrc || value.src || rawAsset;
+    if (!imageAssetId && !imageSrc) return null;
+    return {
+      imageAssetId,
+      imageSrc,
+      imageTitle: value.imageTitle || value.title || value.alt || 'Annotation image',
+      asset: imageAssetId ? `manual-asset://${imageAssetId}` : imageSrc,
+    };
+  }
+
+  function extractManualAssetId(value) {
+    const raw = String(value ?? '');
+    return raw.startsWith('manual-asset://') ? raw.replace(/^manual-asset:\/\//, '') : '';
+  }
+
   function resolvePointColor(rawColor) {
     const value = String(rawColor ?? '').trim();
     const hexColor = resolveHexColor(value);
@@ -355,17 +537,18 @@
 
   function renderTiptapAnnotationAssetNode(node, options) {
     const attrs = node.attrs || {};
+    const resolvedAttrs = resolveAnnotationConfigForLanguage(attrs, options);
     return renderHotspotBlock(
       {
-        asset: `manual-asset://${attrs.imageAssetId || ''}`,
-        alt: attrs.imageTitle || attrs.title || 'Annotation image',
-        layout: attrs.layout,
-        renderMode: attrs.layout === 'vertical' ? 'image-plus-description' : 'overlay-on-image',
-        points: Array.isArray(attrs.points) ? attrs.points.map((point) => ({
+        asset: resolvedAttrs.asset || `manual-asset://${resolvedAttrs.imageAssetId || ''}`,
+        alt: resolvedAttrs.imageTitle || resolvedAttrs.title || 'Annotation image',
+        layout: resolvedAttrs.layout,
+        renderMode: resolvedAttrs.layout === 'vertical' ? 'image-plus-description' : 'overlay-on-image',
+        points: Array.isArray(resolvedAttrs.points) ? resolvedAttrs.points.map((point) => ({
           ...point,
           body: point.body || point.description || '',
         })) : [],
-        shapes: Array.isArray(attrs.shapes) ? attrs.shapes : [],
+        shapes: Array.isArray(resolvedAttrs.shapes) ? resolvedAttrs.shapes : [],
       },
       options,
       'manual-annotation-ui'
@@ -401,19 +584,23 @@
     if (!config || !config.asset) {
       return '<div class="manual-rich-error">Invalid manual-annotation-ui block</div>';
     }
-    const points = Array.isArray(config.points) ? config.points : [];
+    const renderConfig =
+      blockType === 'manual-annotation-ui'
+        ? resolveAnnotationConfigForLanguage(config, options)
+        : config;
+    const points = Array.isArray(renderConfig.points) ? renderConfig.points : [];
     const pointById = new Map(
       points
         .filter((point) => point && typeof point === 'object')
         .map((point, index) => [String(point.id || `point-${index + 1}`), point])
     );
-    const shapes = Array.isArray(config.shapes) ? config.shapes : [];
-    const figureId = `hotspot-${slugify(config.asset)}-${slugify(config.alt || 'image')}`;
-    const imageUrl = resolveAssetUrl(config.asset, options);
+    const shapes = Array.isArray(renderConfig.shapes) ? renderConfig.shapes : [];
+    const figureId = `hotspot-${slugify(renderConfig.asset)}-${slugify(renderConfig.alt || 'image')}`;
+    const imageUrl = resolveAssetUrl(renderConfig.asset, options);
     if (!imageUrl) {
       return '<div class="manual-rich-error">Invalid manual-annotation-ui asset</div>';
     }
-    const layout = config.layout === 'vertical' || config.renderMode === 'image-plus-description'
+    const layout = renderConfig.layout === 'vertical' || renderConfig.renderMode === 'image-plus-description'
       ? 'vertical'
       : 'horizontal';
     const renderMode = layout === 'vertical' ? 'image-plus-description' : 'overlay-on-image';
@@ -519,14 +706,14 @@
       '<div class="manual-annotation-ui-layout" data-slot="annotation-layout">',
       '<div class="manual-hotspot-stage" data-slot="hotspot-stage">',
       '<div class="manual-hotspot-image-frame" data-component="manual-hotspot-image-frame" data-slot="hotspot-image-frame">',
-      `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(config.alt || 'AnnotationUI image')}" loading="lazy" />`,
+      `<img src="${escapeHtml(imageUrl)}" alt="${escapeHtml(renderConfig.alt || 'AnnotationUI image')}" loading="lazy" />`,
       shapesHtml,
       '</div>',
       markersHtml,
       '</div>',
       listHtml,
       '</div>',
-      !isLegacyHotspot && blockType === 'manual-annotation-ui' ? '' : (config.caption ? `<figcaption>${escapeHtml(config.caption)}</figcaption>` : ''),
+      !isLegacyHotspot && blockType === 'manual-annotation-ui' ? '' : (renderConfig.caption ? `<figcaption>${escapeHtml(renderConfig.caption)}</figcaption>` : ''),
       '</figure>',
     ].join('');
   }
