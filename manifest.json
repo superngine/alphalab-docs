@@ -425,43 +425,43 @@
           "pages": [
             {
               "id": "3036765a-92f5-4658-bf9b-e56f433727fa",
-              "title": "Text to Image",
+              "title": "テキストで生成（T2I）",
               "file": "03-275e6dc3-738c-4a98-8bea-87f0e8fe4d17/01-3036765a-92f5-4658-bf9b-e56f433727fa.md",
               "documentId": "3036765a-92f5-4658-bf9b-e56f433727fa"
             },
             {
               "id": "b073cdaa-5edf-4e46-936e-0612cc739764",
-              "title": "Text to Image Ref",
+              "title": "テキストと画像添付で生成",
               "file": "03-275e6dc3-738c-4a98-8bea-87f0e8fe4d17/02-b073cdaa-5edf-4e46-936e-0612cc739764.md",
               "documentId": "b073cdaa-5edf-4e46-936e-0612cc739764"
             },
             {
               "id": "3bcee235-1f3b-40dc-a80d-2f4b87d9caac",
-              "title": "Image to Image",
+              "title": "画像で生成（I2I）",
               "file": "03-275e6dc3-738c-4a98-8bea-87f0e8fe4d17/03-3bcee235-1f3b-40dc-a80d-2f4b87d9caac.md",
               "documentId": "3bcee235-1f3b-40dc-a80d-2f4b87d9caac"
             },
             {
               "id": "f4985f8d-dc4c-4786-901c-06e8de060143",
-              "title": "image to image Ref",
+              "title": "テキストと参照画像で生成",
               "file": "03-275e6dc3-738c-4a98-8bea-87f0e8fe4d17/04-f4985f8d-dc4c-4786-901c-06e8de060143.md",
               "documentId": "f4985f8d-dc4c-4786-901c-06e8de060143"
             },
             {
               "id": "9d5d0a8c-4231-4e93-af63-c1421f325933",
-              "title": "Rough Sketch",
+              "title": "ラフスケッチで生成",
               "file": "03-275e6dc3-738c-4a98-8bea-87f0e8fe4d17/05-9d5d0a8c-4231-4e93-af63-c1421f325933.md",
               "documentId": "9d5d0a8c-4231-4e93-af63-c1421f325933"
             },
             {
               "id": "d235e357-164d-4ed7-b2e4-1fa47cfc0acb",
-              "title": "Inpaint",
+              "title": "インペイントで修正",
               "file": "03-275e6dc3-738c-4a98-8bea-87f0e8fe4d17/06-d235e357-164d-4ed7-b2e4-1fa47cfc0acb.md",
               "documentId": "d235e357-164d-4ed7-b2e4-1fa47cfc0acb"
             },
             {
               "id": "b618c2bc-e05d-40ae-a024-ceb99131e667",
-              "title": "Edit+Fx",
+              "title": "Fxで修正（加工調整）",
               "file": "03-275e6dc3-738c-4a98-8bea-87f0e8fe4d17/07-b618c2bc-e05d-40ae-a024-ceb99131e667.md",
               "documentId": "b618c2bc-e05d-40ae-a024-ceb99131e667"
             }
@@ -474,13 +474,13 @@
           "pages": [
             {
               "id": "715cdeb1-2dcc-4ce1-a82b-516fd50ad8ce",
-              "title": "チュートリアル",
+              "title": "ご利用の前に",
               "file": "04-aebcf31a-c31c-406e-9a6d-6d1e9dda834f/01-715cdeb1-2dcc-4ce1-a82b-516fd50ad8ce.md",
               "documentId": "715cdeb1-2dcc-4ce1-a82b-516fd50ad8ce"
             },
             {
               "id": "70977c6e-81a0-4391-85df-4975ab208ca5",
-              "title": "人物生成",
+              "title": "基本画像生成",
               "file": "04-aebcf31a-c31c-406e-9a6d-6d1e9dda834f/02-70977c6e-81a0-4391-85df-4975ab208ca5.md",
               "documentId": "70977c6e-81a0-4391-85df-4975ab208ca5"
             },
@@ -492,7 +492,7 @@
             },
             {
               "id": "3d8a8a5e-cae3-4907-897d-67119bf2f61c",
-              "title": "キャラクターシート",
+              "title": "キャラクターシート作成",
               "file": "04-aebcf31a-c31c-406e-9a6d-6d1e9dda834f/04-3d8a8a5e-cae3-4907-897d-67119bf2f61c.md",
               "documentId": "3d8a8a5e-cae3-4907-897d-67119bf2f61c"
             },
@@ -510,7 +510,7 @@
             },
             {
               "id": "41844def-c502-46d4-b65f-ee55f9916df8",
-              "title": "後補正",
+              "title": "演出・加工調整",
               "file": "04-aebcf31a-c31c-406e-9a6d-6d1e9dda834f/07-41844def-c502-46d4-b65f-ee55f9916df8.md",
               "documentId": "41844def-c502-46d4-b65f-ee55f9916df8"
             }
