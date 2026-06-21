@@ -413,9 +413,23 @@ body {
 /* Static preview/export annotation overrides.
    The stage width variable sizes the image frame only; marker and shape percentages
    continue to resolve against the rendered image frame for editor parity. */
+.manual-annotation-ui {
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.manual-annotation-ui .manual-annotation-ui-layout {
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
 .manual-annotation-ui .manual-hotspot-stage {
   width: var(--manual-annotation-stage-width, fit-content);
   max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   overflow: visible;
 }
 
@@ -424,14 +438,18 @@ body {
   display: block;
   width: var(--manual-annotation-stage-width, fit-content);
   max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   overflow: hidden;
   border-radius: var(--manual-content-stage-radius, 18px);
   background: transparent;
 }
 
 .manual-annotation-ui .manual-hotspot-image-frame img {
+  display: block;
   width: var(--manual-annotation-stage-width, auto);
   max-width: 100%;
+  height: auto;
 }
 
 .manual-annotation-ui .manual-hotspot-marker {

@@ -24,6 +24,8 @@
   const ANNOTATION_READABLE_IMAGE_WIDTH = 320;
   const ANNOTATION_MAX_UPSCALE = 2;
   const ANNOTATION_MAX_DISPLAY_WIDTH = 480;
+  let annotationResizeBound = false;
+  let annotationResizeTimer = null;
   let imageLightbox = null;
 
   const NAV_LABELS = {
@@ -460,6 +462,7 @@
   }
 
   function initPreviewAnnotationStageSizing() {
+    bindPreviewAnnotationResize();
     contentBody
       .querySelectorAll(".manual-annotation-ui .manual-hotspot-stage")
       .forEach((stage) => {
@@ -473,6 +476,23 @@
           refreshPreviewAnnotationStageSizing(stage);
         }
       });
+  }
+
+  function bindPreviewAnnotationResize() {
+    if (annotationResizeBound) return;
+    window.addEventListener("resize", () => {
+      window.clearTimeout(annotationResizeTimer);
+      annotationResizeTimer = window.setTimeout(() => {
+        refreshAllPreviewAnnotationStageSizing();
+      }, 120);
+    });
+    annotationResizeBound = true;
+  }
+
+  function refreshAllPreviewAnnotationStageSizing() {
+    contentBody
+      .querySelectorAll(".manual-annotation-ui .manual-hotspot-stage")
+      .forEach((stage) => refreshPreviewAnnotationStageSizing(stage));
   }
 
   // Keep preview/export stage sizing readable without changing annotation coordinates.
@@ -491,7 +511,7 @@
       return;
     }
 
-    const displayWidth =
+    const preferredDisplayWidth =
       naturalWidth >= ANNOTATION_READABLE_IMAGE_WIDTH
         ? naturalWidth
         : Math.min(
@@ -499,6 +519,11 @@
             naturalWidth * ANNOTATION_MAX_UPSCALE,
             ANNOTATION_MAX_DISPLAY_WIDTH
           );
+    const availableWidth = getPreviewAnnotationAvailableWidth(stage);
+    const displayWidth =
+      availableWidth && availableWidth > 0
+        ? Math.min(preferredDisplayWidth, availableWidth)
+        : preferredDisplayWidth;
     const stageWidth = `${Math.round(displayWidth)}px`;
     stage.style.setProperty("--manual-annotation-stage-width", stageWidth);
     if (annotationBlock instanceof HTMLElement) {
@@ -507,6 +532,45 @@
     stage.dataset.annotationScale = String(
       Math.round((displayWidth / naturalWidth) * 100) / 100
     );
+  }
+
+  function getPreviewAnnotationAvailableWidth(stage) {
+    const widthCandidates = [];
+    const contentArticle = stage.closest(".content-article");
+    const contentRoot = stage.closest(".content-body");
+    [contentArticle, contentRoot].forEach((element) => {
+      if (!(element instanceof HTMLElement)) return;
+      const width = element.clientWidth || element.getBoundingClientRect().width;
+      if (Number.isFinite(width) && width > 0) {
+        widthCandidates.push(width);
+      }
+    });
+
+    const viewportWidth = document.documentElement.clientWidth || window.innerWidth;
+    if (Number.isFinite(viewportWidth) && viewportWidth > 0) {
+      widthCandidates.push(viewportWidth);
+    }
+    if (!widthCandidates.length) return null;
+
+    let availableWidth = Math.min(...widthCandidates);
+    const tableCell = stage.closest("td, th");
+    if (tableCell instanceof HTMLElement) {
+      const tableCellStyle = window.getComputedStyle(tableCell);
+      availableWidth -=
+        readCssPixelValue(tableCellStyle.paddingLeft) +
+        readCssPixelValue(tableCellStyle.paddingRight) +
+        readCssPixelValue(tableCellStyle.borderLeftWidth) +
+        readCssPixelValue(tableCellStyle.borderRightWidth);
+    }
+
+    return Number.isFinite(availableWidth) && availableWidth > 0
+      ? availableWidth
+      : null;
+  }
+
+  function readCssPixelValue(value) {
+    const parsed = Number.parseFloat(value);
+    return Number.isFinite(parsed) ? parsed : 0;
   }
 
   function resetPreviewAnnotationStageGeometry(stage) {
