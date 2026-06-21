@@ -21,7 +21,7 @@
       "label": "日本語"
     }
   ],
-  "defaultLanguage": "ko",
+  "defaultLanguage": "jp",
   "publishedLanguagesByVersion": {
     "APM_260427": [
       "ko",
@@ -357,162 +357,168 @@
       ],
       "jp": [
         {
-          "id": "59749c6f-9e8d-4a6c-9c74-72024d1343fc",
+          "id": "d7b9b1fe-1bdc-47c4-baf3-74a2656cc55e",
           "kind": "document",
           "title": "はじめに",
           "pages": [
             {
-              "id": "59749c6f-9e8d-4a6c-9c74-72024d1343fc",
+              "id": "d7b9b1fe-1bdc-47c4-baf3-74a2656cc55e",
               "title": "はじめに",
-              "file": "01-59749c6f-9e8d-4a6c-9c74-72024d1343fc.md",
-              "documentId": "59749c6f-9e8d-4a6c-9c74-72024d1343fc"
+              "file": "01-d7b9b1fe-1bdc-47c4-baf3-74a2656cc55e.md",
+              "documentId": "d7b9b1fe-1bdc-47c4-baf3-74a2656cc55e"
             }
           ]
         },
         {
-          "id": "a0e081de-5136-466c-ab52-b94660a5343f",
+          "id": "f2ace1fc-e88e-4067-a882-9e562c0247f1",
           "kind": "folder",
           "title": "画面構成",
           "pages": [
             {
-              "id": "25e7cdd2-fea1-4662-adaf-788721ac97ac",
+              "id": "faabdb6c-34bf-4eb7-827a-eba953cdd85b",
               "title": "画面構成",
-              "file": "02-a0e081de-5136-466c-ab52-b94660a5343f/01-25e7cdd2-fea1-4662-adaf-788721ac97ac.md",
-              "documentId": "25e7cdd2-fea1-4662-adaf-788721ac97ac"
+              "file": "02-f2ace1fc-e88e-4067-a882-9e562c0247f1/01-faabdb6c-34bf-4eb7-827a-eba953cdd85b.md",
+              "documentId": "faabdb6c-34bf-4eb7-827a-eba953cdd85b"
             },
             {
-              "id": "d8b309d9-5250-46e4-a86d-05a142c7890b",
+              "id": "b7a19e7b-7567-48d0-a9c1-7ad48fc772cc",
               "title": "スレッド",
-              "file": "02-a0e081de-5136-466c-ab52-b94660a5343f/02-d8b309d9-5250-46e4-a86d-05a142c7890b.md",
-              "documentId": "d8b309d9-5250-46e4-a86d-05a142c7890b"
+              "file": "02-f2ace1fc-e88e-4067-a882-9e562c0247f1/02-b7a19e7b-7567-48d0-a9c1-7ad48fc772cc.md",
+              "documentId": "b7a19e7b-7567-48d0-a9c1-7ad48fc772cc"
             },
             {
-              "id": "f8c99693-d94a-41c9-97a0-bfd314d6d6a9",
+              "id": "43aa2588-bbc4-4586-ab30-5939172ffa59",
               "title": "生成画像",
-              "file": "02-a0e081de-5136-466c-ab52-b94660a5343f/03-f8c99693-d94a-41c9-97a0-bfd314d6d6a9.md",
-              "documentId": "f8c99693-d94a-41c9-97a0-bfd314d6d6a9"
+              "file": "02-f2ace1fc-e88e-4067-a882-9e562c0247f1/03-43aa2588-bbc4-4586-ab30-5939172ffa59.md",
+              "documentId": "43aa2588-bbc4-4586-ab30-5939172ffa59"
             },
             {
-              "id": "df94ca5c-e9e9-42d2-b478-8cb8aaeb2e86",
+              "id": "8309271d-9d9d-4a63-9523-571d5b59fa47",
               "title": "画像ライブラリ",
-              "file": "02-a0e081de-5136-466c-ab52-b94660a5343f/04-df94ca5c-e9e9-42d2-b478-8cb8aaeb2e86.md",
-              "documentId": "df94ca5c-e9e9-42d2-b478-8cb8aaeb2e86"
+              "file": "02-f2ace1fc-e88e-4067-a882-9e562c0247f1/04-8309271d-9d9d-4a63-9523-571d5b59fa47.md",
+              "documentId": "8309271d-9d9d-4a63-9523-571d5b59fa47"
             },
             {
-              "id": "fcd4f862-e905-4938-86ee-d5af5b48a5df",
+              "id": "6916d025-4446-49d4-8fb4-baaf9eb451b0",
               "title": "ワークスペース",
-              "file": "02-a0e081de-5136-466c-ab52-b94660a5343f/05-fcd4f862-e905-4938-86ee-d5af5b48a5df.md",
-              "documentId": "fcd4f862-e905-4938-86ee-d5af5b48a5df"
+              "file": "02-f2ace1fc-e88e-4067-a882-9e562c0247f1/05-6916d025-4446-49d4-8fb4-baaf9eb451b0.md",
+              "documentId": "6916d025-4446-49d4-8fb4-baaf9eb451b0"
             },
             {
-              "id": "50272324-7198-4b5b-9285-ad8cbd7e2c6d",
+              "id": "cb7ba8e3-3663-4cf0-a5f7-17e5f0844e81",
               "title": "インペイント",
-              "file": "02-a0e081de-5136-466c-ab52-b94660a5343f/06-50272324-7198-4b5b-9285-ad8cbd7e2c6d.md",
-              "documentId": "50272324-7198-4b5b-9285-ad8cbd7e2c6d"
+              "file": "02-f2ace1fc-e88e-4067-a882-9e562c0247f1/06-cb7ba8e3-3663-4cf0-a5f7-17e5f0844e81.md",
+              "documentId": "cb7ba8e3-3663-4cf0-a5f7-17e5f0844e81"
             },
             {
-              "id": "cd0e64d1-3711-4b5b-a94d-ec5242f1cb18",
+              "id": "9bbfd7ca-5d0b-4904-b653-d7ceba83871b",
               "title": "環境設定およびユーザー情報",
-              "file": "02-a0e081de-5136-466c-ab52-b94660a5343f/07-cd0e64d1-3711-4b5b-a94d-ec5242f1cb18.md",
-              "documentId": "cd0e64d1-3711-4b5b-a94d-ec5242f1cb18"
+              "file": "02-f2ace1fc-e88e-4067-a882-9e562c0247f1/07-9bbfd7ca-5d0b-4904-b653-d7ceba83871b.md",
+              "documentId": "9bbfd7ca-5d0b-4904-b653-d7ceba83871b"
             }
           ]
         },
         {
-          "id": "275e6dc3-738c-4a98-8bea-87f0e8fe4d17",
+          "id": "a1e7f153-159f-4ce7-91c8-62e2cf2308df",
           "kind": "folder",
           "title": "プログラム機能",
           "pages": [
             {
-              "id": "3036765a-92f5-4658-bf9b-e56f433727fa",
+              "id": "5e71dff7-930a-4875-a767-7aa2846bcefd",
               "title": "テキストで生成（T2I）",
-              "file": "03-275e6dc3-738c-4a98-8bea-87f0e8fe4d17/01-3036765a-92f5-4658-bf9b-e56f433727fa.md",
-              "documentId": "3036765a-92f5-4658-bf9b-e56f433727fa"
+              "file": "03-a1e7f153-159f-4ce7-91c8-62e2cf2308df/01-5e71dff7-930a-4875-a767-7aa2846bcefd.md",
+              "documentId": "5e71dff7-930a-4875-a767-7aa2846bcefd"
             },
             {
-              "id": "b073cdaa-5edf-4e46-936e-0612cc739764",
+              "id": "ab048169-0ab0-4318-ac21-6135692dadcc",
               "title": "テキストと画像添付で生成",
-              "file": "03-275e6dc3-738c-4a98-8bea-87f0e8fe4d17/02-b073cdaa-5edf-4e46-936e-0612cc739764.md",
-              "documentId": "b073cdaa-5edf-4e46-936e-0612cc739764"
+              "file": "03-a1e7f153-159f-4ce7-91c8-62e2cf2308df/02-ab048169-0ab0-4318-ac21-6135692dadcc.md",
+              "documentId": "ab048169-0ab0-4318-ac21-6135692dadcc"
             },
             {
-              "id": "3bcee235-1f3b-40dc-a80d-2f4b87d9caac",
+              "id": "13619940-69be-40e4-bfaa-77a28a3cebdf",
               "title": "画像で生成（I2I）",
-              "file": "03-275e6dc3-738c-4a98-8bea-87f0e8fe4d17/03-3bcee235-1f3b-40dc-a80d-2f4b87d9caac.md",
-              "documentId": "3bcee235-1f3b-40dc-a80d-2f4b87d9caac"
+              "file": "03-a1e7f153-159f-4ce7-91c8-62e2cf2308df/03-13619940-69be-40e4-bfaa-77a28a3cebdf.md",
+              "documentId": "13619940-69be-40e4-bfaa-77a28a3cebdf"
             },
             {
-              "id": "f4985f8d-dc4c-4786-901c-06e8de060143",
+              "id": "ef90dcdd-1c54-4943-b94d-b1b7bb77925a",
               "title": "テキストと参照画像で生成",
-              "file": "03-275e6dc3-738c-4a98-8bea-87f0e8fe4d17/04-f4985f8d-dc4c-4786-901c-06e8de060143.md",
-              "documentId": "f4985f8d-dc4c-4786-901c-06e8de060143"
+              "file": "03-a1e7f153-159f-4ce7-91c8-62e2cf2308df/04-ef90dcdd-1c54-4943-b94d-b1b7bb77925a.md",
+              "documentId": "ef90dcdd-1c54-4943-b94d-b1b7bb77925a"
             },
             {
-              "id": "9d5d0a8c-4231-4e93-af63-c1421f325933",
+              "id": "8063b2a2-a159-4c83-ade5-df439714e211",
               "title": "ラフスケッチで生成",
-              "file": "03-275e6dc3-738c-4a98-8bea-87f0e8fe4d17/05-9d5d0a8c-4231-4e93-af63-c1421f325933.md",
-              "documentId": "9d5d0a8c-4231-4e93-af63-c1421f325933"
+              "file": "03-a1e7f153-159f-4ce7-91c8-62e2cf2308df/05-8063b2a2-a159-4c83-ade5-df439714e211.md",
+              "documentId": "8063b2a2-a159-4c83-ade5-df439714e211"
             },
             {
-              "id": "d235e357-164d-4ed7-b2e4-1fa47cfc0acb",
+              "id": "e11bd475-9e07-45f8-b896-e6045e7342e7",
               "title": "インペイントで修正",
-              "file": "03-275e6dc3-738c-4a98-8bea-87f0e8fe4d17/06-d235e357-164d-4ed7-b2e4-1fa47cfc0acb.md",
-              "documentId": "d235e357-164d-4ed7-b2e4-1fa47cfc0acb"
+              "file": "03-a1e7f153-159f-4ce7-91c8-62e2cf2308df/06-e11bd475-9e07-45f8-b896-e6045e7342e7.md",
+              "documentId": "e11bd475-9e07-45f8-b896-e6045e7342e7"
             },
             {
-              "id": "b618c2bc-e05d-40ae-a024-ceb99131e667",
+              "id": "1273661e-1108-432c-b02f-d6f809de0c49",
               "title": "Fxで修正（加工調整）",
-              "file": "03-275e6dc3-738c-4a98-8bea-87f0e8fe4d17/07-b618c2bc-e05d-40ae-a024-ceb99131e667.md",
-              "documentId": "b618c2bc-e05d-40ae-a024-ceb99131e667"
+              "file": "03-a1e7f153-159f-4ce7-91c8-62e2cf2308df/07-1273661e-1108-432c-b02f-d6f809de0c49.md",
+              "documentId": "1273661e-1108-432c-b02f-d6f809de0c49"
             }
           ]
         },
         {
-          "id": "aebcf31a-c31c-406e-9a6d-6d1e9dda834f",
+          "id": "cdfa81c5-2954-49a4-a5f8-953a34a33f17",
           "kind": "folder",
           "title": "チュートリアル",
           "pages": [
             {
-              "id": "715cdeb1-2dcc-4ce1-a82b-516fd50ad8ce",
+              "id": "095e1b4b-ba1a-4155-845f-9fd99094d94b",
               "title": "ご利用の前に",
-              "file": "04-aebcf31a-c31c-406e-9a6d-6d1e9dda834f/01-715cdeb1-2dcc-4ce1-a82b-516fd50ad8ce.md",
-              "documentId": "715cdeb1-2dcc-4ce1-a82b-516fd50ad8ce"
+              "file": "04-cdfa81c5-2954-49a4-a5f8-953a34a33f17/01-095e1b4b-ba1a-4155-845f-9fd99094d94b.md",
+              "documentId": "095e1b4b-ba1a-4155-845f-9fd99094d94b"
             },
             {
-              "id": "70977c6e-81a0-4391-85df-4975ab208ca5",
+              "id": "506102f4-56ef-4bbd-b158-d549252dcb64",
               "title": "基本画像生成",
-              "file": "04-aebcf31a-c31c-406e-9a6d-6d1e9dda834f/02-70977c6e-81a0-4391-85df-4975ab208ca5.md",
-              "documentId": "70977c6e-81a0-4391-85df-4975ab208ca5"
+              "file": "04-cdfa81c5-2954-49a4-a5f8-953a34a33f17/02-506102f4-56ef-4bbd-b158-d549252dcb64.md",
+              "documentId": "506102f4-56ef-4bbd-b158-d549252dcb64"
             },
             {
-              "id": "a689ebdf-a397-4ad4-854a-4375a468af7d",
+              "id": "72227984-a5b2-4215-8b5d-b22db03da442",
               "title": "キャラクター生成",
-              "file": "04-aebcf31a-c31c-406e-9a6d-6d1e9dda834f/03-a689ebdf-a397-4ad4-854a-4375a468af7d.md",
-              "documentId": "a689ebdf-a397-4ad4-854a-4375a468af7d"
+              "file": "04-cdfa81c5-2954-49a4-a5f8-953a34a33f17/03-72227984-a5b2-4215-8b5d-b22db03da442.md",
+              "documentId": "72227984-a5b2-4215-8b5d-b22db03da442"
             },
             {
-              "id": "3d8a8a5e-cae3-4907-897d-67119bf2f61c",
+              "id": "95b33cb5-334f-4f5a-8607-848bcfc17202",
               "title": "キャラクターシート作成",
-              "file": "04-aebcf31a-c31c-406e-9a6d-6d1e9dda834f/04-3d8a8a5e-cae3-4907-897d-67119bf2f61c.md",
-              "documentId": "3d8a8a5e-cae3-4907-897d-67119bf2f61c"
+              "file": "04-cdfa81c5-2954-49a4-a5f8-953a34a33f17/04-95b33cb5-334f-4f5a-8607-848bcfc17202.md",
+              "documentId": "95b33cb5-334f-4f5a-8607-848bcfc17202"
             },
             {
-              "id": "3cc1a8ed-82b0-439e-9495-a745e8558448",
+              "id": "4e5c5f17-d517-4aae-8655-e2e861854e3d",
               "title": "スタイル変更",
-              "file": "04-aebcf31a-c31c-406e-9a6d-6d1e9dda834f/05-3cc1a8ed-82b0-439e-9495-a745e8558448.md",
-              "documentId": "3cc1a8ed-82b0-439e-9495-a745e8558448"
+              "file": "04-cdfa81c5-2954-49a4-a5f8-953a34a33f17/05-4e5c5f17-d517-4aae-8655-e2e861854e3d.md",
+              "documentId": "4e5c5f17-d517-4aae-8655-e2e861854e3d"
             },
             {
-              "id": "6d524d2b-077b-42f2-8d78-39391c15b909",
+              "id": "bfc2de28-a5f9-42b0-a72f-f81c4789336d",
               "title": "背景変更",
-              "file": "04-aebcf31a-c31c-406e-9a6d-6d1e9dda834f/06-6d524d2b-077b-42f2-8d78-39391c15b909.md",
-              "documentId": "6d524d2b-077b-42f2-8d78-39391c15b909"
+              "file": "04-cdfa81c5-2954-49a4-a5f8-953a34a33f17/06-bfc2de28-a5f9-42b0-a72f-f81c4789336d.md",
+              "documentId": "bfc2de28-a5f9-42b0-a72f-f81c4789336d"
             },
             {
-              "id": "41844def-c502-46d4-b65f-ee55f9916df8",
+              "id": "251f9394-4c3a-4bc5-95a4-6a2b0e3d9466",
               "title": "演出・加工調整",
-              "file": "04-aebcf31a-c31c-406e-9a6d-6d1e9dda834f/07-41844def-c502-46d4-b65f-ee55f9916df8.md",
-              "documentId": "41844def-c502-46d4-b65f-ee55f9916df8"
+              "file": "04-cdfa81c5-2954-49a4-a5f8-953a34a33f17/07-251f9394-4c3a-4bc5-95a4-6a2b0e3d9466.md",
+              "documentId": "251f9394-4c3a-4bc5-95a4-6a2b0e3d9466"
+            },
+            {
+              "id": "9e08fef7-736a-42a6-948c-d440500ae1d4",
+              "title": "test",
+              "file": "04-cdfa81c5-2954-49a4-a5f8-953a34a33f17/08-9e08fef7-736a-42a6-948c-d440500ae1d4.md",
+              "documentId": "9e08fef7-736a-42a6-948c-d440500ae1d4"
             }
           ]
         }
