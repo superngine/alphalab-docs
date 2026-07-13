@@ -54,6 +54,16 @@ PURE MODEL AIとともに、あなただけの創作の世界を広げてくだ�
       "y": 89.93,
       "color": "rgba(15, 23, 42, 0.7)",
       "fontColor": "#ffffff"
+    },
+    {
+      "id": "ffe11ecf-aca9-4b5d-b0bb-2440ac74f40e",
+      "label": "5",
+      "title": "ワークスペース",
+      "body": "ユーザーとPURE MODEL AIのやり取りが対話形式で表示されます。ユーザーが入力した内容は右側に、PURE MODEL AIの生成結果は左側に表示されます。",
+      "x": 48.23,
+      "y": 44.75,
+      "color": "rgba(15, 23, 42, 0.7)",
+      "fontColor": "#ffffff"
     }
   ],
   "shapes": []
