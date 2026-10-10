@@ -3,7 +3,8 @@
    - .annotation-asset-node-view* selectors render the editor node view.
    Keep marker and shape percentages relative to the displayed image frame on both surfaces. */
 .tiptap.ProseMirror [data-type="manual-asset-node"],
-.tiptap.ProseMirror [data-type="annotation-asset-node"] {
+.tiptap.ProseMirror [data-type="annotation-asset-node"],
+.tiptap.ProseMirror div[data-youtube-video] {
   display: block;
   min-width: 0;
   max-width: 100%;
@@ -11,8 +12,28 @@
 }
 
 .tiptap.ProseMirror [data-type="manual-asset-node"].manual-asset-node-view--image,
-.tiptap.ProseMirror [data-type="annotation-asset-node"] {
+.tiptap.ProseMirror [data-type="annotation-asset-node"],
+.tiptap.ProseMirror div[data-youtube-video] {
   margin: 2rem 0;
+}
+
+.tiptap.ProseMirror div[data-youtube-video] {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: 1px solid var(--manual-content-border, var(--border, rgb(226 232 240)));
+  border-radius: var(--manual-content-video-radius, 18px);
+  background: #000;
+  box-shadow: var(--manual-content-shadow, none);
+}
+
+.tiptap.ProseMirror div[data-youtube-video] iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
 }
 
 .manual-rich-video,

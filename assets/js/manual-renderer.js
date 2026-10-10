@@ -281,15 +281,24 @@
 
   function extractYouTubeEmbed(url) {
     try {
-      const parsed = new URL(url);
+      const parsed = new URL(/^https?:\/\//i.test(url) ? url : `https://${url}`);
+      if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') return null;
       const host = parsed.hostname.replace(/^www\./, '');
       if (host === 'youtube.com' || host === 'm.youtube.com') {
-        const videoId = parsed.searchParams.get('v');
-        return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+        if (parsed.pathname === '/watch') {
+          const videoId = parsed.searchParams.get('v');
+          return videoId && /^[\w-]+$/.test(videoId)
+            ? `https://www.youtube.com/embed/${videoId}`
+            : null;
+        }
+        const shortsMatch = /^\/shorts\/([\w-]+)\/?$/.exec(parsed.pathname);
+        return shortsMatch ? `https://www.youtube.com/embed/${shortsMatch[1]}` : null;
       }
       if (host === 'youtu.be') {
-        const videoId = parsed.pathname.replace(/^\/+/, '');
-        return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+        const pathParts = parsed.pathname.split('/').filter(Boolean);
+        return pathParts.length === 1 && /^[\w-]+$/.test(pathParts[0])
+          ? `https://www.youtube.com/embed/${pathParts[0]}`
+          : null;
       }
     } catch (_error) {
       return null;
@@ -466,6 +475,11 @@
         return renderTiptapManualAssetNode(node, options);
       case 'annotationAssetNode':
         return renderTiptapAnnotationAssetNode(node, options);
+      case 'youtube':
+        return renderVideoBlock(
+          { sourceType: 'youtube', url: node.attrs?.src },
+          options
+        );
       default:
         return renderTiptapContent(node.content, options);
     }
